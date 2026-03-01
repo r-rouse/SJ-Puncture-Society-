@@ -45,10 +45,12 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = dbState === 1 ? 'connected' : 'disconnected';
+  const databaseConfigured = !!process.env.MONGODB_URI;
   res.json({
     status: dbState === 1 ? 'ok' : 'degraded',
     message: 'San Jose Puncture Society API is running',
     database: dbStatus,
+    databaseConfigured,
   });
 });
 

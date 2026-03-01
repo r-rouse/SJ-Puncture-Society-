@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Box, Text } from '@gluestack-ui/themed';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
@@ -224,19 +225,27 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <Box flex={1} bg="$white">
       <StatusBar style="auto" />
-      
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>San Jose Puncture Society</Text>
-          <View style={styles.counterContainer}>
-            <Text style={styles.counterText}>{locationCount}</Text>
-            <Text style={styles.counterLabel}>punctures</Text>
-          </View>
-        </View>
-        <Text style={styles.subtitle}>Tag flat tire locations</Text>
-      </View>
+
+      <Box pt="$12" pb="$3" px="$5" bg="$trueGray100" borderBottomWidth={1} borderBottomColor="$trueGray200">
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Text size="xl" fontWeight="$bold" color="$trueGray800" flex={1}>
+            San Jose Puncture Society
+          </Text>
+          <Box alignItems="flex-end" ml="$4">
+            <Text size="2xl" fontWeight="$bold" color="$green600">
+              {locationCount}
+            </Text>
+            <Text size="xs" color="$trueGray600" mt="$0.5">
+              punctures
+            </Text>
+          </Box>
+        </Box>
+        <Text size="sm" color="$trueGray600" mt="$1">
+          Tag flat tire locations
+        </Text>
+      </Box>
 
       <MapView
         ref={mapRef}
@@ -433,7 +442,7 @@ export default function HomeScreen() {
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Box>
   );
 }
 

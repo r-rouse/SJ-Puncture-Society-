@@ -1,5 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
+import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { config } from '@gluestack-ui/config';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,8 +12,9 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
+    <GluestackUIProvider config={config}>
+      <SafeAreaProvider>
+        <NavigationContainer>
         <Tab.Navigator
           screenOptions={{
             headerShown: false,
@@ -52,7 +55,8 @@ export default function App() {
             }}
           />
         </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GluestackUIProvider>
   );
 }
