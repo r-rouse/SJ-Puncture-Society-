@@ -58,6 +58,25 @@ router.get('/', requireDb, async (req, res) => {
   }
 });
 
+const { getNeighborhoodForPoint } = require('../data/neighborhoods');
+
+// GET neighborhood counts (must be before /:id)
+router.get('/neighborhoods', requireDb, async (req, res) => {
+  try {
+    const locations = await Location.find({}, { latitude: 1, longitude: 1 });
+    const counts = {};
+    locations.forEach((loc) => {
+      const name = getNeighborhoodForPoint(loc.latitude, loc.longitude);
+      counts[name] = (counts[name] || 0) + 1;
+    });
+    const list = Object.entries(counts).map(([name, count]) => ({ name, count }));
+    list.sort((a, b) => b.count - a.count);
+    res.json(list);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // GET location by ID
 router.get('/:id', requireDb, async (req, res) => {
   try {

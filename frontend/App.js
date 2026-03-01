@@ -1,12 +1,13 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import HomeScreen from './screens/HomeScreen';
 import AboutScreen from './screens/AboutScreen';
+import DataScreen from './screens/DataScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +40,7 @@ export default function App() {
             component={HomeScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Text style={{ fontSize: size, color }}>🗺️</Text>
+                <Ionicons name="map" size={size} color={color} />
               ),
               tabBarLabel: 'Map',
             }}
@@ -49,9 +50,19 @@ export default function App() {
             component={AboutScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Text style={{ fontSize: size, color }}>⚙️</Text>
+                <Ionicons name="information-circle" size={size} color={color} />
               ),
               tabBarLabel: 'About',
+            }}
+          />
+          <Tab.Screen
+            name="Data"
+            component={DataScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="bar-chart" size={size} color={color} />
+              ),
+              tabBarLabel: 'Data',
             }}
           />
         </Tab.Navigator>

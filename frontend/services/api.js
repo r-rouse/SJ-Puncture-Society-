@@ -19,6 +19,16 @@ export const fetchLocations = async () => {
   }
 };
 
+export const fetchNeighborhoods = async () => {
+  try {
+    const response = await api.get('/locations/neighborhoods');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching neighborhoods:', error);
+    throw error;
+  }
+};
+
 export const submitLocation = async (latitude, longitude, imageUris = [], deviceId) => {
   try {
     const formData = new FormData();
