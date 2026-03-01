@@ -14,6 +14,22 @@ const SAN_JOSE_REGION = {
   longitudeDelta: 0.15,
 };
 
+const SAN_JOSE_BOUNDS = {
+  minLat: 37.21,
+  maxLat: 37.46,
+  minLng: -122.07,
+  maxLng: -121.71,
+};
+
+function isWithinSanJose(lat, lng) {
+  return (
+    lat >= SAN_JOSE_BOUNDS.minLat &&
+    lat <= SAN_JOSE_BOUNDS.maxLat &&
+    lng >= SAN_JOSE_BOUNDS.minLng &&
+    lng <= SAN_JOSE_BOUNDS.maxLng
+  );
+}
+
 export default function HomeScreen() {
   const mapRef = useRef(null);
   const [location, setLocation] = useState(null);
@@ -167,12 +183,29 @@ export default function HomeScreen() {
 
   const handleMapPress = (event) => {
     const { coordinate } = event.nativeEvent;
+    const { latitude, longitude } = coordinate;
+    if (!isWithinSanJose(latitude, longitude)) {
+      Alert.alert(
+        'Outside San Jose',
+        'That location is outside San Jose city limits. This project only tracks flat tire reports within San Jose—please choose a spot inside the city.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
     setLocation(coordinate);
   };
 
   const handleSubmit = async () => {
     if (!location) {
       Alert.alert('Error', 'Please select a location on the map.');
+      return;
+    }
+    if (!isWithinSanJose(location.latitude, location.longitude)) {
+      Alert.alert(
+        'Outside San Jose',
+        'That location is outside San Jose city limits. This project only tracks flat tire reports within San Jose—please choose a spot inside the city.',
+        [{ text: 'OK' }]
+      );
       return;
     }
     await submitLocationWithImages(location, []);

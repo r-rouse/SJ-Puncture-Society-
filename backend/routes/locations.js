@@ -58,7 +58,7 @@ router.get('/', requireDb, async (req, res) => {
   }
 });
 
-const { getNeighborhoodForPoint } = require('../data/neighborhoods');
+const { getNeighborhoodForPoint, isWithinSanJose } = require('../data/neighborhoods');
 
 // GET neighborhood counts (must be before /:id)
 router.get('/neighborhoods', requireDb, async (req, res) => {
@@ -121,6 +121,15 @@ router.post('/', requireDb, upload.array('images', 5), async (req, res) => {
       return res.status(400).json({ error: 'Device ID is required' });
     }
 
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    if (!isWithinSanJose(lat, lng)) {
+      return res.status(400).json({
+        error: 'Out of scope',
+        message: 'That location is outside San Jose city limits. This project only tracks flat tire reports within San Jose.',
+      });
+    }
+
     // Check daily limit (2 per device per day)
     const todayCount = await checkDailyLimit(deviceId);
     if (todayCount >= 2) {
@@ -133,8 +142,8 @@ router.post('/', requireDb, upload.array('images', 5), async (req, res) => {
     const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const location = new Location({
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
+      latitude: lat,
+      longitude: lng,
       images: imagePaths,
       deviceId: deviceId,
     });

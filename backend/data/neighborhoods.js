@@ -4,6 +4,23 @@
  * minLat <= lat <= maxLat && minLng <= lng <= maxLng.
  * Checked in order; first match wins. Locations outside all boxes go to "Other".
  */
+
+const SAN_JOSE_BOUNDS = {
+  minLat: 37.21,
+  maxLat: 37.46,
+  minLng: -122.07,
+  maxLng: -121.71,
+};
+
+function isWithinSanJose(lat, lng) {
+  return (
+    lat >= SAN_JOSE_BOUNDS.minLat &&
+    lat <= SAN_JOSE_BOUNDS.maxLat &&
+    lng >= SAN_JOSE_BOUNDS.minLng &&
+    lng <= SAN_JOSE_BOUNDS.maxLng
+  );
+}
+
 const NEIGHBORHOODS = [
   { name: 'Downtown', minLat: 37.32, maxLat: 37.35, minLng: -121.90, maxLng: -121.88 },
   { name: 'Japantown', minLat: 37.35, maxLat: 37.37, minLng: -121.90, maxLng: -121.88 },
@@ -30,4 +47,4 @@ function getNeighborhoodForPoint(lat, lng) {
   return 'Other';
 }
 
-module.exports = { NEIGHBORHOODS, getNeighborhoodForPoint };
+module.exports = { NEIGHBORHOODS, getNeighborhoodForPoint, isWithinSanJose };
