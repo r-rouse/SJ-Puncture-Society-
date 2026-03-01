@@ -12,6 +12,11 @@ const locationSchema = new mongoose.Schema({
   images: [{
     type: String, // Path to image file
   }],
+  deviceId: {
+    type: String,
+    required: true,
+    index: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

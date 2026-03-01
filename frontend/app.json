@@ -16,20 +16,25 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sjpuncturesociety.app"
+      "bundleIdentifier": "com.puncturesociety.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sjpuncturesociety.app",
+      "package": "com.puncturesociety.app",
       "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -41,14 +46,12 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow San Jose Puncture Society to use your location to tag flat tire locations."
         }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you upload images of flat tire locations."
-        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ffc41f57-48fe-4590-982b-352651a15da1"
+      }
+    }
   }
 }
-

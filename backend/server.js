@@ -15,20 +15,52 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Connect to MongoDB
+// Connect to MongoDB (fail fast so we don't serve requests with a stuck connection)
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sj_puncture_society', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 10000,
 })
 .then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+.catch(err => {
+  console.error('MongoDB connection error:', err.message || err);
+});
 
 // Routes
 app.use('/api/locations', require('./routes/locations'));
 
-// Health check
+// Root - so visiting the backend URL doesn't show "Cannot GET /"
+app.get('/', (req, res) => {
+  res.json({
+    name: 'San Jose Puncture Society API',
+    status: 'ok',
+    endpoints: {
+      health: '/api/health',
+      locations: '/api/locations',
+    },
+  });
+});
+
+// Health check (includes DB status so you can confirm DB is accessible)
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'San Jose Puncture Society API is running' });
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = dbState === 1 ? 'connected' : 'disconnected';
+  res.json({
+    status: dbState === 1 ? 'ok' : 'degraded',
+    message: 'San Jose Puncture Society API is running',
+    database: dbStatus,
+  });
+});
+
+// 404 for unknown routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found', path: req.path });
+});
+
+// Central error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 app.listen(PORT, () => {

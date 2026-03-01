@@ -3,7 +3,19 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
 const Location = require('../models/Location');
+
+// Fail fast if DB is not connected (avoids buffering timeout 500s)
+const requireDb = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      error: 'Database unavailable',
+      message: 'Cannot connect to MongoDB. Check MONGODB_URI and that MongoDB is running.',
+    });
+  }
+  next();
+};
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -37,7 +49,7 @@ const upload = multer({
 });
 
 // GET all locations
-router.get('/', async (req, res) => {
+router.get('/', requireDb, async (req, res) => {
   try {
     const locations = await Location.find().sort({ createdAt: -1 });
     res.json(locations);
@@ -47,7 +59,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET location by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireDb, async (req, res) => {
   try {
     const location = await Location.findById(req.params.id);
     if (!location) {
@@ -59,13 +71,44 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Helper function to check daily limit
+const checkDailyLimit = async (deviceId) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const count = await Location.countDocuments({
+    deviceId: deviceId,
+    createdAt: {
+      $gte: today,
+      $lt: tomorrow,
+    },
+  });
+
+  return count;
+};
+
 // POST create new location with images
-router.post('/', upload.array('images', 5), async (req, res) => {
+router.post('/', requireDb, upload.array('images', 5), async (req, res) => {
   try {
-    const { latitude, longitude } = req.body;
+    const { latitude, longitude, deviceId } = req.body;
     
     if (!latitude || !longitude) {
       return res.status(400).json({ error: 'Latitude and longitude are required' });
+    }
+
+    if (!deviceId) {
+      return res.status(400).json({ error: 'Device ID is required' });
+    }
+
+    // Check daily limit (2 per device per day)
+    const todayCount = await checkDailyLimit(deviceId);
+    if (todayCount >= 2) {
+      return res.status(429).json({ 
+        error: 'Daily limit reached',
+        message: 'You can only tag 2 flat tire locations per day. Please try again tomorrow.',
+      });
     }
 
     const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
@@ -74,6 +117,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
       images: imagePaths,
+      deviceId: deviceId,
     });
 
     await location.save();
@@ -84,7 +128,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 });
 
 // DELETE location by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireDb, async (req, res) => {
   try {
     const location = await Location.findById(req.params.id);
     if (!location) {
