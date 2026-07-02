@@ -55,5 +55,5 @@ This Privacy Policy may be updated from time to time. Any changes will be posted
 
 If you have questions about this Privacy Policy, please contact:
 
-**Email:** your-email@example.com
+**Email:** mr.randallgrouse@gmail.com
 ```
