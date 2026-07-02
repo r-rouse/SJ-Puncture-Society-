@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "generate-assets": "node generate-assets.js"
+    "generate-assets": "node generate-assets.js",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@gluestack-style/react": "^1.0.57",

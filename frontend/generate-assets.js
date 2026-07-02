@@ -17,7 +17,7 @@ async function createImage(filename, width, height, color = '#28a745') {
   const svg = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <rect width="${width}" height="${height}" fill="${color}"/>
-      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${Math.min(width, height) * 0.1}" 
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${Math.min(width, height) * 0.28}"
             fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">
         SJPS
       </text>
